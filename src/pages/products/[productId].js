@@ -21,23 +21,36 @@ export default function ProductPage({ product }) {
         <p>Stock: {product.stock}</p>
         <p>Brand: {product.brand}</p>
         <p>Category: {product.category}</p>
-        <div className="product-buttons">
-          <button className="add-to-cart-button">Add to Cart</button>
-          <Link href="/" className="back-to-home-button">Back to Home</Link>
-        </div>
+        <button className="add-to-cart-button">Add to Cart</button>
+        <Link href="/" className="back-to-home-button">Back to Home</Link>
       </div>
     </div>
   );
 }
 
 export async function getServerSideProps({ query }) {
-  const productId = query.productId;
-  const apiUrl = `https://dummyjson.com/products/${productId}`;
-  const response = await axios.get(apiUrl);
-  const product = response.data;
-  return {
-    props: {
-      product,
-    },
-  };
+  try {
+    const productId = query.productId;
+    const apiUrl = `https://dummyjson.com/products/${productId}`;
+    const response = await axios.get(apiUrl);
+    const product = response.data;
+
+    if (!product) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        product,
+      },
+    };
+  } catch {
+    return {
+      props: {
+        product: null,
+      },
+    };
+  }
 }
